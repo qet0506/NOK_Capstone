@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NOKTheme {
-                UserPage(context = this)
+                MainApp()
             }
         }
     }

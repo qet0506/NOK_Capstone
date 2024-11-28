@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.nok.utils.PreferenceUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -53,7 +54,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserPage(context: Context) {
+fun UserPage(navController: NavController, context: Context) {
     var isExample by remember { mutableStateOf(PreferenceUtils.loadState(context)) }
     var lastRefreshTime by remember { mutableStateOf(PreferenceUtils.loadString(context, "lastRefreshTime")) }
 
