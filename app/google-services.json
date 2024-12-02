@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "76268759151",
+    "firebase_url": "https://fifthappclass-default-rtdb.firebaseio.com",
+    "project_id": "fifthappclass",
+    "storage_bucket": "fifthappclass.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76268759151:android:0080cda8a354cdb9e8459a",
+        "android_client_info": {
+          "package_name": "com.example.myapplication5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoCBkKUk5vjHDPNqtO55itrxGMYNTyVD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76268759151:android:5c80b3ab0a3d40a5e8459a",
+        "android_client_info": {
+          "package_name": "com.example.myapplication6"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoCBkKUk5vjHDPNqtO55itrxGMYNTyVD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76268759151:android:015144b8655f5b49e8459a",
+        "android_client_info": {
+          "package_name": "com.example.nok"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoCBkKUk5vjHDPNqtO55itrxGMYNTyVD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

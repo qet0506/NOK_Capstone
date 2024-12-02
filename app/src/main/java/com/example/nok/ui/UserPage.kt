@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -31,6 +32,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.nok.feature.auth.signin.SignInViewModel
 import com.example.nok.utils.PreferenceUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -53,18 +59,31 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserPage(context: Context) {
+fun UserPage(
+    navController: NavController,
+    context: Context,
+    viewModel: UserPageViewModel = viewModel(),
+    email: String
+) {
+    val uiState = viewModel.state.collectAsState() // ViewModel 상태를 구독
+    val username = email.substringBefore("@")
     var isExample by remember { mutableStateOf(PreferenceUtils.loadState(context)) }
     var lastRefreshTime by remember { mutableStateOf(PreferenceUtils.loadString(context, "lastRefreshTime")) }
+    LaunchedEffect(key1 = uiState.value) {
+        if (uiState.value == SignOutState.LoggedOut)
+            navController.navigate("login" ) {
+                popUpTo("home") {inclusive = true}
+            }
 
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("정현빈") },
+                title = { Text(username) },
                 actions = {
                     IconButton(onClick = {
                         RefreshData(
-                            username = "bob",
+                            username = username,
                             onExampleChange = { newState ->
                                 isExample = newState
                                 PreferenceUtils.saveState(context, newState)
@@ -76,6 +95,12 @@ fun UserPage(context: Context) {
                         )
                     }) {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = "refresh")
+                    }
+                    IconButton(onClick = { viewModel.signOut()}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = null
+                        )
                     }
                 }
             )
@@ -201,7 +226,7 @@ fun StatRed() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "치매가 의심됩니다. 전문의 상담이 필요합니다.",
+                text = "치매가 의심됩니다. \n전문의 상담이 필요합니다.",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
