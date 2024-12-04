@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -43,12 +42,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.nok.feature.auth.signin.SignInViewModel
 import com.example.nok.utils.PreferenceUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -69,13 +66,15 @@ fun UserPage(
     val username = email.substringBefore("@")
     var isExample by remember { mutableStateOf(PreferenceUtils.loadState(context)) }
     var lastRefreshTime by remember { mutableStateOf(PreferenceUtils.loadString(context, "lastRefreshTime")) }
+    var userScore by remember { mutableStateOf(0) } // 점수를 저장하는 상태 추가
+
     LaunchedEffect(key1 = uiState.value) {
         if (uiState.value == SignOutState.LoggedOut)
-            navController.navigate("login" ) {
-                popUpTo("home") {inclusive = true}
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
             }
-
     }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -91,12 +90,15 @@ fun UserPage(
                             onDateTimeChange = { dateTime ->
                                 lastRefreshTime = dateTime
                                 PreferenceUtils.saveString(context, "lastRefreshTime", dateTime)
+                            },
+                            onScoreChange = { score -> // 점수 업데이트 콜백 추가
+                                userScore = score
                             }
                         )
                     }) {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = "refresh")
                     }
-                    IconButton(onClick = { viewModel.signOut()}) {
+                    IconButton(onClick = { viewModel.signOut() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = null
@@ -127,7 +129,15 @@ fun UserPage(
                 StatRed()
             }
             Spacer(modifier = Modifier.height(16.dp))
-            //EmotionSummary(7,3)
+
+            // RefreshData에서 받아온 점수를 표시하는 Text
+            Text(
+                text = "현재 점수: $userScore",
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
@@ -427,22 +437,23 @@ fun EmotionSummary(positive: Int, negative: Int) {
 fun RefreshData(
     username: String,
     onExampleChange: (Boolean) -> Unit,
-    onDateTimeChange: (String) -> Unit
+    onDateTimeChange: (String) -> Unit,
+    onScoreChange: (Int) -> Unit // 점수를 업데이트하는 콜백 추가
 ) {
-    // Retrofit API 호출
     RetrofitClient.apiService.getUserData(username).enqueue(object : Callback<UserDataClass> {
         override fun onResponse(call: Call<UserDataClass>, response: Response<UserDataClass>) {
             if (response.isSuccessful) {
-                // 서버에서 받은 데이터
                 val userData = response.body()
                 if (userData != null) {
                     Log.d("Refresh", "데이터 수신 성공: $userData")
 
-                    // 서버 응답 데이터를 기반으로 상태 변경
-                    var newState = userData.data.total_score > 41
-                    onExampleChange(newState) // 상태 업데이트 콜백 호출
+                    val newState = userData.data.total_score > 41
+                    onExampleChange(newState)
+
                     val currentDateTime = getCurrentDateTime()
                     onDateTimeChange(currentDateTime)
+
+                    onScoreChange(userData.data.total_score) // 점수 업데이트 콜백 호출
                 } else {
                     Log.e("Refresh", "응답 데이터가 null입니다.")
                 }
@@ -452,12 +463,10 @@ fun RefreshData(
         }
 
         override fun onFailure(call: Call<UserDataClass>, t: Throwable) {
-            // 네트워크 또는 요청 실패
             Log.e("Refresh", "네트워크 오류: ${t.message}")
         }
     })
 }
-
 fun getCurrentDateTime(): String {
     val dateFormat = SimpleDateFormat("yyyy. MM. dd. HH:mm", Locale.getDefault())
     return dateFormat.format(Date())
