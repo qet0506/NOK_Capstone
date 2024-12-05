@@ -134,8 +134,8 @@ fun UserPage(
             Text(
                 text = "현재 점수: $userScore",
                 color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 60.sp,
+                //fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
@@ -447,7 +447,7 @@ fun RefreshData(
                 if (userData != null) {
                     Log.d("Refresh", "데이터 수신 성공: $userData")
 
-                    val newState = userData.data.total_score > 41
+                    val newState = userData.data.total_score > 71
                     onExampleChange(newState)
 
                     val currentDateTime = getCurrentDateTime()
