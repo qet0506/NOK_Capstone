@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nok.utils.PreferenceUtils
+import kotlinx.coroutines.delay
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,6 +75,26 @@ fun UserPage(
                 popUpTo("home") { inclusive = true }
             }
     }
+    LaunchedEffect(Unit) {
+        while (true) {
+            RefreshData(
+                username = username,
+                onExampleChange = { newState ->
+                    isExample = newState
+                    PreferenceUtils.saveState(context, newState)
+                },
+                onDateTimeChange = { dateTime ->
+                    lastRefreshTime = dateTime
+                    PreferenceUtils.saveString(context, "lastRefreshTime", dateTime)
+                },
+                onScoreChange = { score ->
+                    userScore = score
+                }
+            )
+            delay(300_000L) // 1분 = 60,000ms
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -98,7 +119,9 @@ fun UserPage(
                     }) {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = "refresh")
                     }
-                    IconButton(onClick = { viewModel.signOut() }) {
+                    IconButton(onClick = {
+                        viewModel.signOut()
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = null
